@@ -56,11 +56,11 @@ class ColorA:
     def dark(self):
         self.colorsdict[self.color].append(1)
 
-appemailpassword = '@!$EDSDW Eqwem2'
-appemail = 'nutribaseapp@gmail.com'
+appemailpassword = PASSWORD
+appemail = EMAIL
 emailchangesubject = "Your NutiBase app email has been changed"
 emailchangebeg = "Upon your request, we have changed your email to:"
-all = string.ascii_letters + string.digits + string.punctuation
+all = RANDOM
 digits1 = '0123456789.,'
 ad = string.ascii_letters + string.digits
 passwordchangesubject = 'Your NutriBase app password has been changed'
@@ -68,7 +68,7 @@ change_passworda ="Upon your request, we have changed your password to:"
 
 
 def send_email(subject1, begining, username, useremail, changeditem):  # create new pasword by using random.choice
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+    with smtplib.SMTP_SSL('smtp.gmail.com', X) as smtp:
         smtp.ehlo()
         smtp.login(appemail, appemailpassword)
         subject = subject1
