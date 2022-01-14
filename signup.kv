@@ -1,0 +1,240 @@
+#:set big "15sp"
+#:set vsmall "6sp"
+#:set small "10sp"
+#:set color255 (6, 39, 112,1)
+#:set color1dark (198/255, 211/255, 240/255,1)
+#:set color1 (6/255, 39/255, 112/255, 1)
+#:set color1ForTop (6/255, 39/255, 2)
+#:set color1light (0,0,1,0.05)
+#:set color255light  (0,0,255,0.15)
+#:set color255dark  (198, 211, 240,1)  # other idea #102770  #C6D3F0 c6d3f0
+
+<TextInputMD@MDTextFieldRound>:
+    normal_color: 0, 0, 0, 0.1
+    color_active: 1, 1, 1, 1
+    line_color: color1
+    line_color_focus: color1
+    color_mode: "black"
+    cursor_color:color1
+    font_size: big if root.width> 1500 else small
+    cursor_color: color1
+<LineButtonMD@MDRoundFlatButton>:
+    markup: True
+    bold: True
+    font_size: big if root.width> 1500 else small
+    line_color: color1
+    text_color: color1
+    line_width: 1.3
+    pos_hint: {"x":0, "y":0.2}
+<FilledButtonMD@MDFillRoundFlatButton>:
+    markup: True
+    bold: True
+    font_size: big if root.width> 1500 else small
+    line_color: color255
+    text_color: (0,0,0,1)
+    md_bg_color: color1
+    pos_hint: {"x":0, "y":0.2}
+<RegularLabel@Label>:
+    font_size: big if root.width> 1500 else small
+    text_size: self.width, None
+    size: self.texture_size
+    color: "black"
+    padding_x: 10
+    texture: self.texture
+    markup:True
+<RegularScrollableLabel@Label>:
+    font_size: big if root.width> 1500 else small
+    size_hint_x: None
+    texture: self.texture
+    width: self.texture_size[0]
+    color:"black"
+<LargeLabel@Label>:
+    font_size: big if root.width> 1500 else small
+    text_size: self.size
+    size: self.texture_size
+    color: "black"
+    bold: True
+    padding_x: 3
+    markup: True
+<LineBox@BoxLayout>:
+    background_color: (0,0,0,0)
+    background_normal: ''
+    back_color: color255
+    border_radius:  25
+    bold: True
+    canvas.before:
+        Color:
+            rgba: color255
+        Line:
+            width: 1.8
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+<PlainBox@BoxLayout>:
+    background_color: (0,0,0,0)
+    background_normal: ''
+    back_color: color255light
+    bold: True
+    canvas.before:
+        Color:
+            rgba: color255light
+        Line:
+            width: 1.0
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+
+<Signup>:
+    user: user
+    official_name_title: official_name_title
+    email_address: email_address
+    hospital: hospital
+    password: password
+    repeat_new_password: repeat_new_password
+    info1: info1
+    BoxLayout:
+        orientation: "vertical"
+        auto_dismiss: False
+        title: " Sign Up "
+        markup: True
+        padding: 0,0,0, 6
+        ActionBar:
+            pos_hint: {"top": 1}
+            background_color: color1
+            ActionView:
+                ActionPrevious:
+                    previous_image: "images/chevron-left.png"
+                    title: "Sign Up"
+                    bold: "True"
+                    with_previous: True
+                    on_press: root.do_cancel()
+        BoxLayout:
+            orientation: "vertical"
+            GridLayout:
+                cols:4
+                spacing:0.07*root.height
+                padding: [0,0.04*(root.height), 0,  0]
+                Label:
+                    size_hint_x: 0.01
+                AnchorLayout:
+                    size_hint_x: 0.29
+                    Button:
+                        background_color: (0, 0, 0, 0.0)
+                        Image:
+                            source:'images/newuser_icon.png'
+                            center_x: self.parent.center_x-5
+                            center_y: self.parent.center_y-10
+                            size_hint: None, None
+                            size: (0.06*root.width,0.06*root.height)
+                Label:
+                    size_hint_x: 0.69
+                    id: info1
+                    text: ''
+                    markup: True
+                Label:
+                    size_hint_x: 0.01
+
+                Label:
+                    size_hint_x: 0.01
+                RegularLabel:
+                    size_hint_x: 0.29
+                    text: "User Name"
+                TextInputMD:
+                    id: user
+                    write_tab: False
+                    multiline:False
+                    size_hint_y: None
+                    size_hint_x:0.69
+                    line_color_focus: color1
+                Label:
+                    size_hint_x: 0.01
+                Label:
+                    size_hint_x: 0.01
+                RegularLabel:
+                    text: "Official Name/ Title"
+                    size_hint_x: 0.29
+                TextInputMD:
+                    id: official_name_title
+                    write_tab: False
+                    multiline:False
+                    size_hint_y: None
+                    size_hint_x:0.69
+                    hint_text:"eg. Smith, RN"
+                    line_color_focus: color1
+                Label:
+                    size_hint_x: 0.01
+
+                Label:
+                    size_hint_x: 0.01
+                RegularLabel:
+                    text: "Email Address"
+                    size_hint_x: 0.29
+                TextInputMD:
+                    id: email_address
+                    write_tab: False
+                    multiline:True
+                    size_hint_y: None
+                    size_hint_x:0.69
+                    line_color_focus: color1
+                Label:
+                    size_hint_x: 0.01
+                Label:
+                    size_hint_x: 0.01
+                RegularLabel:
+                    text: "Official Hospital Name"
+                    size_hint_x: 0.29
+
+                TextInputMD:
+                    id: hospital
+                    write_tab: False
+                    multiline:True
+                    size_hint_y: None
+                    size_hint_x:0.69
+                    line_color_focus: color1
+                Label:
+                    size_hint_x: 0.01
+
+                Label:
+                    size_hint_x: 0.01
+                RegularLabel:
+                    text: "Password"
+                    size_hint_x: 0.29
+                TextInputMD:
+                    id: password
+                    write_tab: False
+                    multiline:True
+                    password: "True"
+                    size_hint_y: None
+                    size_hint_x: 0.69
+                    line_color_focus: color1
+                Label:
+                    size_hint_x: 0.01
+                Label:
+                    size_hint_x: 0.01
+                RegularLabel:
+                    text: "Repeat Password"
+                    size_hint_x:0.29
+                TextInputMD:
+                    id: repeat_new_password
+                    write_tab: False
+                    multiline: False
+                    on_text_validate: root.do_signup()
+                    password: True
+                    size_hint_y: None
+                    size_hint_x: 0.69
+                    line_color_focus: color1
+                Label:
+                    size_hint_x:0.01
+        Label:
+        BoxLayout:
+            padding_y: 6
+            spacing:15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text: f"[b] Cancel  [/b]"
+                    on_press: root.do_cancel()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text: f"[b]Register[/b]"
+                    on_press: root.do_signup()
+

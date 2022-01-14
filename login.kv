@@ -1,0 +1,4550 @@
+#:include signup.kv
+
+<ClearButton@Button>:
+    background_color: (0,0,0,0)
+    background_normal: ''
+    back_color: (0,0,1, 0.0)
+    border_radius:  [18]
+    canvas.before:
+        Color:
+            rgba: self.back_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: self.border_radius
+<LogIn>:
+    user: user
+    password: password
+    info:info
+    BoxLayout:
+        id: login_layout
+        orientation: 'vertical'
+        padding: [0.2*(root.width),0.18*(root.height), 0.2*(root.width),  0]
+        BoxLayout:
+            size_hint_y: 0.2
+            canvas.before:
+                Color:
+                    rgba: color1dark
+                Triangle:
+                    points: [root.width, root.height, 0, root.height, root.width, root.height*0.7]
+                Color:
+                    rgba: color1
+                Triangle:
+                    points: [0, root.height, root.width, root.height, 0, root.height*0.7]
+            Label:
+                text: '[b]Nutribase [/b]'
+                markup: True
+                color: 61/255, 55/255, 134/255
+                font_size: '30sp'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.2
+            Label:
+                id: info
+                text: ''
+                markup: True
+                size_hint_y: 0.05
+                color: 'black'
+                text_size: root.width-20, None
+                padding_x: 0.2*root.width
+            BoxLayout:
+            	size_hint_y: 0.45
+                MDTextField:
+                    id: user
+                    hint_text: "User Name"
+                    write_tab: False
+                    multiline:False
+                    line_color_focus: color1
+                    size_hint_y: None
+                    size_hint_x: 0.7
+                    pos_hint: {"x":0.25, "y":0.1}
+                    color: 'black'
+
+            BoxLayout:
+            	size_hint_y: 0.45
+                MDTextField:
+                    id: password
+                    hint_text: "Password"
+                    write_tab: False
+                    multiline:False
+                    on_text_validate: root.do_login()
+                    password:True
+                    line_color_focus: color1
+                    size_hint_y: None
+                    size_hint_x: 0.7
+                    pos_hint: {"x":0.25, "y":0.1}
+                    color: 'black'
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: 0.25
+            spacing:15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text: '[b]Sign Up[/b]'
+                    on_press: root.do_signup()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text: '[b]Log In[/b]'
+                    on_press: root.do_login()
+        AnchorLayout:
+            size_hint_y: 0.1
+            ClearButton:
+                text: 'Forgot password'
+                bold: True
+                size_hint_x: 0.3
+                color: 'black'
+                on_press: root.forgotpassword()
+
+        BoxLayout:
+            size_hint_y:0.25 - (0.18*(root.height))/root.height
+
+
+<SelectableLabel>:
+    text_size: self.size
+    id_label1: ''
+    id_label2: ''
+    background_normal: ''
+    back_color: color255
+    border_radius:  25
+    color: self.back_color
+    bold: True
+    canvas.before:
+        Color:
+            rgba: color255dark  if self.selected else color255light
+        Line:
+            width: 1.8
+            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+
+    BoxLayout:
+        orientation: "horizontal"
+        BoxLayout:
+            padding:[0, 0, 0,  0 ]
+            size_hint_x: 0.1
+            Button:
+                background_color: (0, 0, 255, 0)
+                on_press:root.patientpopup()
+                Image:
+                    source:'images/trashicon.png'
+                    center_x: self.parent.center_x-5
+                    center_y: self.parent.center_y-10
+                    size_hint: None, None
+                    size: (38,38)
+        LargeLabel:
+            id: id_label1
+            text: root.id_label1
+            size_hint_x: 0.4
+            halign:'center'
+            valign:'middle'
+        BoxLayout:
+            size_hint_x: 0.001
+            background_normal: ''
+            back_color: color255
+            border_radius:  0
+            color: self.back_color
+            bold: True
+            canvas.before:
+                Color:
+                    rgba: color255light
+                Line:
+                    width: 1.0
+                    rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+            Label:
+                id: name_screen
+                text: ""
+                color: 'black'
+        LargeLabel:
+            id: id_label2
+            text: root.id_label2
+            size_hint_x: 0.3
+            valign:'middle'
+            halign:'center'
+        BoxLayout:
+            size_hint_x :0.2
+            orientation:"horizontal"
+            padding: (10, 5, 0, 5)
+            Button:
+                id: buttonrv
+                text: "[b]Expand[/b]"
+                font_size: small if root.width> 1500 else vsmall
+                markup: True
+                background_color: 0, 0, 1, 0.03
+                color:'black'
+                manager: None
+                name_screen: ''
+                on_press: root.printed()
+                on_release:
+                    self.manager.current = self.name_screen
+
+<RV>:
+    viewclass: 'SelectableLabel'
+    SelectableRecycleBoxLayout:
+        default_size: None, dp(42)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        multiselect: False
+        touch_multiselect: False
+        padding:(0.01*root.width,5,0.01*root.width,5)
+        spacing: 4
+
+<Connected>:
+    id: connected
+    BoxLayout:
+        orientation: "vertical"
+        patientlist: patientlist
+        filterpic: filterpic
+        filterwards: filterwards
+        BoxLayout:
+            size_hint_y: 0.08
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                app_icon: "images/kivyicon.png"
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB [/b]"
+                        markup:True
+                        color: 'white'
+                        with_previous: True
+                        on_press: root.back()
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        color: "white"
+                        font_size: big if root.width> 1500 else small
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            color:"white"
+                            background_color: color1
+                            font_size: big if root.width> 1500 else small
+                            on_press: root.profile()
+                        ActionButton:
+                            text: "[b]About[/b]"
+                            markup: True
+                            background_color: color1
+                            font_size: big if root.width> 1500 else small
+                            on_press: root.about()
+                        ActionButton:
+                            text: "[b]Delete User[/b]"
+                            markup: True
+                            color: "white"
+                            background_color: color1
+                            font_size: big if root.width> 1500 else small
+                            on_press: root.deleting_user_popup()
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 0
+            size_hint_y: 0.92
+            BoxLayout:
+                size_hint_y: 0.08
+                padding:(0.01*root.width,10,0,0)
+                BoxLayout:
+                    padding:(10,0,10,0)
+                    spacing: root.width*0.02 if root.width*0.02>40 else 40
+                    BoxLayout:
+                        size_hint_x: 0.55 -12/root.width
+                        pos_hint_x: 0.1
+                        MDTextField:
+                            id: patient_number
+                            line_color_focus: color1
+                            pos_hint: {"x":0.25, "y":-0.1}
+                            font_size: big
+                            hint_text: "Search by Patient Number"
+                            write_tab: False
+                            multiline:False
+                            on_text: root.search_hospital_patient_text(self.text)
+                            on_text_validate: root.search_hospital_patient()
+                    BoxLayout:
+                        size_hint_x: 0.35
+                        spacing: 6
+
+                        FilledButtonMD:
+                            text: f"[b]New Patient[/b]"
+                            on_press: root.new_hospital_patient()
+
+                    BoxLayout:
+                        size_hint_x:0.1
+            BoxLayout:
+                size_hint_y: 0.05
+                orientation:"horizontal"
+                BoxLayout:
+                    size_hint_x: 0.05
+                BoxLayout:
+                    size_hint_x: 0.1
+                    Button:
+                        id: filterwards
+                        background_color: (0, 0 , 1, 0)
+                        on_press: root.filtered()
+                        Image:
+                            id:filterpic
+                            source:'images/filteroff.png'
+                            x: self.parent.x-5
+                            center_y: self.parent.center_y-10
+                            size_hint: None, None
+                            size: (48,48)
+                BoxLayout:
+                    padding: (0,0,0,0)
+                    orientation:"horizontal"
+                    size_hint_x: 0.85
+                    LargeLabel:
+                        size_hint_x: 0.5
+                        text: "Patient Name"
+                        italic: True
+                    LargeLabel:
+                        size_hint_x: 0.4
+                        text: "Patient Number"
+                        italic: True
+                    Label:
+                        size_hint_x: 0.1
+            BoxLayout:
+                size_hint_y: 0.87
+                padding:(0.01*root.width,5,0.01*root.width,5)
+                RV:
+                    id: patientlist
+                    padding:(0.01*root.width,5,0.01*root.width,5)
+                    rows1: [("It seems like you are the first staff from your hospital to use this app", "If this is wrong please check on your hospital name spelling")]
+                    name : connected
+                    data: [{'id_label1': str(x[0]), 'id_label2': str(x[1]), "manager": root.manager, "name_screen": self.name} for x in self.rows1]
+
+<About>:
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: 0.03
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB [/b]"
+                        markup:True
+                        color: "white"
+                        with_previous: True
+                        on_press: root.back()
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        font_size: big if root.width> 1500 else small
+                        color: "white"
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        Label:
+            size_hint_y: 0.04
+        Accordion:
+            orientation:"vertical"
+            size_hint_y: 0.93
+
+            AccordionItem:
+                id: a1
+                title: "Where is the information on the app from?"
+                collapse: False
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                color: 'black'
+                BoxLayout:
+                    orientation: "vertical"
+                    spacing: 10
+                    Label:
+                        color: "black"
+                        size: self.texture_size
+                        text_size: root.width-20, None
+                        text: "Nestlé Nutrition Institute - MNA® Elderly - Overview. (2021). Retrieved from https://www.mna-elderly.com/"
+                    Label:
+                        color: "black"
+                        size: self.texture_size
+                        text_size: root.width-20, None
+                        text: "Micronutrient Exam: Clinical Interpretation of Nutrition Focused Physical Exam Findings (n.d.). Retrieved from https://www.todaysdietitian.com/newarchives/images/MicronutrientTable0318.pdf"
+                    Label:
+                        color: "black"
+                        size: self.texture_size
+                        text_size: root.width-20, None
+                        text: "Strickland, A. (2017, April 13). Nutrition Focused Physical Exam (NFPE). Indiana Academy of Nutrition and Dietetics Annual Conference"
+
+            AccordionItem:
+                id: a2
+                title: "The app crashed unexpectedly"
+                collapse: True
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                BoxLayout:
+                    orientation: "vertical"
+                    padding_y: 15
+                    Label:
+                        color: "black"
+                        text_size: root.width-20, None
+                        text: "Please email nutribaseapp@gmail.com about any issues"
+
+            AccordionItem:
+                id: a3
+                title: "Have an idea for the app"
+                collapse: True
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                BoxLayout:
+                    orientation: "vertical"
+                    padding_y: 15
+                    Label:
+                        color: "black"
+                        text_size: root.width-20, None
+                        text: "Please email nutribaseapp@gmail.com for recommendations"
+            AccordionItem:
+                id: a4
+                title: "Deleted my account but I can still see the information."
+                collapse: True
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                color: 'black'
+                BoxLayout:
+                    orientation: "vertical"
+                    padding_y: 15
+                    Label:
+                        color: "black"
+                        text_size: self.size
+                        text_size: root.width-20, None
+                        text: "Once you log out you should not be able to log back in"
+
+            AccordionItem:
+                id: a5
+                title: "I can't see my hospital's data"
+                collapse: True
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                color: 'black'
+                BoxLayout:
+                    orientation: "vertical"
+                    padding_y: 15
+                    Label:
+                        color: "black"
+                        text_size: self.size
+                        text_size: root.width-20, None
+                        text: "Make sure you are spelling your hospital name like your coworkers. If you need to change your hospital name click on profile from the main page. (Profile is found under the three vertical buttons at the top)"
+
+            AccordionItem:
+                id: a6
+                title: "I want to update my email/official name/ title"
+                collapse: True
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                color: 'black'
+                BoxLayout:
+                    orientation: "vertical"
+                    padding_y: 15
+                    Label:
+                        color: "black"
+                        text_size: self.size
+                        text_size: root.width-20, None
+                        text: "Click on profile from the main page. (Profile is found under the three vertical buttons at the top)"
+
+            AccordionItem:
+                id: a7
+                title: "Something you would like to see on the app"
+                collapse: True
+                background_normal: 'images/onpress.png'
+                background_selected: 'images/pressed.png'
+                BoxLayout:
+                    orientation: "vertical"
+                    padding_y: 15
+                    Label:
+                        color: "black"
+                        text_size: root.width-20, None
+                        text: "Please email nutribaseapp@gmail.com about any issues"
+
+
+<Updateprofile>:
+    BoxLayout:
+        orientation:"vertical"
+        nh: nh
+        no: no
+        usera: usera
+        np: np
+        op: op
+        padding: 40
+    	spacing: root.height*0.03
+    	Button:
+            background_color: (0, 0, 0, 0.0)
+            size_hint_y: 0.1
+            Image:
+                source:'images/user_icon.png'
+                center_x: self.parent.center_x-5
+                center_y: self.parent.center_y-10
+                size_hint: None, None
+                size: (root.width*0.07,root.width*0.07) if root.width > 1500 else (root.height*0.1,root.height*0.1)
+        GridLayout:
+            cols:1
+    	    spacing: 30
+    	    size_hint_y:0.7
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            RegularLabel:
+	                size_hint_x: 0.29
+	                text: "User Name"
+	            RegularLabel:
+	                id: usera
+                    text: ''
+    	            size_hint_x: 0.69
+                Label:
+                    size_hint_x: 0.01
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            RegularLabel:
+	                size_hint_x: 0.29
+	                text: "Hospital"
+	                valign:'bottom'
+                BoxLayout:
+                    padding: (0, 0, 0,0)
+                    size_hint_x: 0.69
+                    MDTextField:
+                        id: nh
+                        text: ''
+                        multline: False
+                        write_tab: False
+                        line_color_focus: color1
+                BoxLayout:
+                    size_hint_x:0.01
+                    padding: 32
+
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            RegularLabel:
+	                size_hint_x: 0.29
+	                text: "Official name/title"
+                BoxLayout:
+                    padding: (0,0, 0,0)
+                    size_hint_x: 0.69
+                    MDTextField:
+                        id: no
+                        text: ''
+                        multiline: False
+                        write_tab: False
+                        line_color_focus: color1
+                BoxLayout:
+                    size_hint_x:0.01
+                    padding: 32
+
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            RegularLabel:
+	                size_hint_x: 0.29
+	                text: "Email address"
+	            BoxLayout:
+                    padding: (0, 0, 0,0)
+                    size_hint_x: 0.69
+                    MDTextField:
+                        id: ne
+                        text: ''
+                        multline: False
+                        write_tab: False
+                        line_color_focus: color1
+                BoxLayout:
+                    size_hint_x:0.01
+
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            RegularLabel:
+	                size_hint_x: 0.29
+	                text: "Change Password"
+	            BoxLayout:
+                    padding: (0, 25, 0,0)
+                    size_hint_x: 0.69
+                    orientation: "vertical"
+                    MDTextField:
+                        id: np
+                        multline: False
+                        hint_text: "Update Password"
+                        write_tab: False
+                        line_color_focus: color1
+                Label:
+                    size_hint_x: 0.01
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            RegularLabel:
+	                size_hint_x: 0.29
+	                text: "Current Password"
+	            BoxLayout:
+                    padding: (0, 25, 0,0)
+                    size_hint_x: 0.69
+                    orientation: "vertical"
+                    MDTextField:
+                        id: op
+                        multiline: True
+                        hint_text: "Confirm current password"
+                        write_tab: False
+                        line_color_focus: color1
+                BoxLayout:
+                    size_hint_x:0.01
+
+            BoxLayout:
+                orientation: "horizontal"
+	            Label:
+                    size_hint_x: 0.01
+	            Label:
+	                size_hint_x: 0.01
+	            Label:
+                    id:change
+                    text:''
+                    text_size: root.width-20, None
+    	            size_hint_x: 0.96
+    	            markup: True
+    	            color:"red"
+    	            padding_x: 0.02*root.width
+                Label:
+                    size_hint_x: 0.02
+        BoxLayout:
+            size_hint_y:0.2
+            orientation:"horizontal"
+            spacing: 15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:"[b]Cancel[/b]"
+                    on_press: root.back()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text: "[b]Save[/b]"
+                    on_press:root.savep()
+
+
+<Patient>:
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: 0.1
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[color=#FFFFFF][b]NB[/b] Patient Information[/color]"
+                        markup:True
+                        with_previous: True
+                        on_press: root.back()
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        font_size: big if root.width> 1500 else small
+                        color: "white"
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        BoxLayout:
+            orientation: "vertical"
+            p_name: p_name
+	        p_number: p_number
+	        p_age: p_age
+	        p_height: p_height
+	        p_weight: p_weight
+	        p_muac: p_muac
+            p_hgs: p_hgs
+	        p_firstimpression: p_firstimpression
+	        p_ward: p_ward
+	        emptyp1 : emptyp1
+	        size_hint_y: 0.79
+    	    spacing: 0.03*root.height
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.03
+                spacing: 40
+	            LargeLabel:
+	                text: "Name  "
+	                size_hint_x: 0.2
+	                halign:'right'
+	                valign:'bottom'
+	                multiline:True
+	            TextInputMD:
+    	            id: p_name
+    	            multiline:False
+    	            write_tab: False
+    	            size_hint_x: 0.7
+                Label:
+                    size_hint_x: 0.1
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.03
+                spacing: 40
+		        LargeLabel:
+    	            text: "Patient Number  "
+    	            size_hint_x: 0.2
+    	            halign:'right'
+    	            valign:'bottom'
+    	            multiline:True
+	            TextInputMD:
+    	            id: p_number
+    	            multiline:False
+    	            write_tab: False
+    	            size_hint_x: 0.7
+                Label:
+                    size_hint_x: 0.1
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.03
+                spacing: 40
+		        LargeLabel:
+    	            text: "Patient Ward  "
+    	            size_hint_x: 0.2
+    	            halign:'right'
+    	            valign:'bottom'
+    	            multiline:True
+	            TextInputMD:
+    	            id: p_ward
+    	            multiline:False
+    	            write_tab: False
+    	            size_hint_x: 0.7
+                Label:
+                    size_hint_x: 0.1
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.03
+                spacing: 40
+		        LargeLabel:
+    	            text: 'Age  '
+	                size_hint_x: 0.2
+	                halign:'right'
+	                valign:'bottom'
+                BoxLayout:
+                    orientation:'horizontal'
+                    size_hint_x: 0.7
+                    TextInputMD:
+                        id: p_age
+                        multiline:False
+                        write_tab: False
+                        size_hint_x: 0.65
+                    Label:
+                        size_hint_x: 0.05
+                    RegularLabel:
+                        text: "M"
+                        size_hint_x: 0.04
+                        halign:'right'
+                        font_size:vsmall
+                        valign:'bottom'
+                    Slider:
+                        id:gender_slider
+                        min: 0
+                        max: 2
+                        step: 1
+                        orientation: 'horizontal'
+                        on_value:root.p_gender(*args)
+                        value_track: True
+                        value_track_color: [0, 0,0, 1]
+                        cursor_image: 'images/slider_icon.png'
+                        cursor_size: (0.04*root.width,0.04*root.width ) if root.width<root.height else (0.04*root.height,0.04*root.height )
+                        color:color255
+                        size_hint_x: 0.18
+                        valign:'bottom'
+                    RegularLabel:
+                        halign:"left"
+                        text: "F"
+                        size_hint_x: 0.080
+                        font_size: vsmall
+                        valign:'bottom'
+                Label:
+                    size_hint_x: 0.1
+
+		    BoxLayout:
+		        orientation: "horizontal"
+		        size_hint_y: 0.03
+		        spacing: 40
+		        LargeLabel:
+    	            text: 'Height  '
+	                size_hint_x: 0.2
+	                halign:'right'
+	                valign:'bottom'
+
+                BoxLayout:
+                    orientation: "horizontal"
+                    size_hint_x: 0.7
+                    TextInputMD:
+                        id: p_height
+                        multiline:False
+                        write_tab: False
+                        size_hint_x: 0.65
+
+                    Label:
+                        size_hint_x: 0.05
+                    CheckBox:
+                        group: "height"
+                        active: True
+                        color:color1
+                        size_hint_x: 0.075
+                        id: h1
+                        halign:'right'
+
+                    RegularLabel:
+                        halign:"left"
+                        text: "cm"
+                        size_hint_x: 0.085
+                        valign:'bottom'
+                        font_size: vsmall
+                    CheckBox:
+                        group: "height"
+                        active: False
+                        color:color1
+                        size_hint_x: 0.07
+                        id: h2
+                        halign:'right'
+
+                    RegularLabel:
+                        halign:"left"
+                        text: "in"
+                        size_hint_x: 0.07
+                        valign:'bottom'
+                        font_size: vsmall
+                Label:
+                    size_hint_x: 0.1
+		    BoxLayout:
+		        orientation: "horizontal"
+		        size_hint_y: 0.03
+		        spacing: 40
+		        LargeLabel:
+    	            text: 'Weight  '
+	                size_hint_x: 0.2
+	                halign:'right'
+	                valign:'bottom'
+                BoxLayout:
+                    orientation: "horizontal"
+                    size_hint_x: 0.7
+                    TextInputMD:
+                        id: p_weight
+                        multiline:False
+                        write_tab: False
+                        size_hint_x: 0.65
+                    Label:
+                        size_hint_x: 0.05
+                    CheckBox:
+                        group: "weight"
+                        active: True
+                        color:color1
+                        size_hint_x: 0.075
+                        id: w1
+
+                    RegularLabel:
+                        halign:"left"
+                        text: "kg"
+                        size_hint_x: 0.08
+                        font_size: vsmall
+                        valign:'bottom'
+                    CheckBox:
+                        group: "weight"
+                        active: False
+                        color:color1
+                        size_hint_x: 0.075
+                        id: w2
+
+                    RegularLabel:
+                        halign:"left"
+                        text: "lb"
+                        size_hint_x: 0.07
+                        font_size: vsmall
+                        valign:'bottom'
+                Label:
+                    size_hint_x: 0.1
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.03
+                spacing: 40
+		        LargeLabel:
+                    text: 'MUAC  '
+	                size_hint_x: 0.2
+	                halign:'right'
+	                valign:'bottom'
+                TextInputMD:
+                    id: p_muac
+                    multiline:False
+    	            write_tab: False
+    	            size_hint_x: 0.7
+    	            hint_text: "in cm"
+                Label:
+                    size_hint_x: 0.1
+
+            BoxLayout:
+		        orientation: "horizontal"
+		        size_hint_y: 0.03
+		        spacing: 40
+		        LargeLabel:
+                    text: 'Hand-grip strength  '
+	                size_hint_x: 0.2
+	                halign:'right'
+	                valign:'bottom'
+                TextInputMD:
+                    id: p_hgs
+    	            multiline:False
+    	            write_tab: False
+    	            size_hint_x: 0.7
+                Label:
+                    size_hint_x: 0.1
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.07
+                Label:
+                    size_hint_x: 0.1
+                TextInput:
+                    id: p_firstimpression
+                    hint_text: "First impression: body language, amputations, ability to communicate, stability, obvious injury, athritis, paralysis etc."
+                    multiline:True
+                    write_tab: False
+                    on_text_validate: root.next()
+                    pos_hint: {"x":0.01, "y":0.01}
+                    cursor_color: color1
+                    height: "40dp" if root.width <1500 else '32dp'
+                    size_hint_x: 0.8
+                    line_color_focus: color1
+                Label:
+                    size_hint_x: 0.1
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: 0.05
+            Label:
+                size_hint_x: 0.1
+            Label:
+                size_hint_x: 0.2
+            RegularLabel:
+                id: emptyp1
+                text:''
+                markup: True
+                size_hint_x: 0.6
+
+            Label:
+                size_hint_x: 0.2
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 0.06
+            padding_y:6
+            Label:
+                size_hint_y: 0.1
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.9
+                spacing: 15
+                AnchorLayout:
+                    anchor_x:'right'
+                    anchor_y:'center'
+                    LineButtonMD:
+                        text:'[b]Previous[/b]'
+                        on_press: root.back()
+                AnchorLayout:
+                    anchor_x:'left'
+                    anchor_y:'center'
+                    FilledButtonMD:
+                        text:'[b]  Next  [/b]'
+                        on_press: root.next()
+
+
+<PFlag>:
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: 0.1
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB[/b] Flag"
+                        markup:True
+                        with_previous: True
+                        color: "white"
+                        on_press: root.backp2()
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        color: "white"
+                        font_size: big if root.width> 1500 else small
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 0.84
+            BoxLayout:
+                orientation: "vertical"
+                padding:(10,0,10,0)
+                spacing: 5
+                BoxLayout:
+                    orientation: "vertical"
+                    padding:(10,0,10,0)
+                    size_hint_y: 0.21
+                    background_normal: ''
+                    back_color: color255
+                    border_radius:  25
+                    color: color1
+                    bold: True
+                    canvas.before:
+                        Color:
+                            rgba: color1
+                        Line:
+                            width: 1.8
+                            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+                    Label:
+
+                    RegularLabel:
+                        text: " Has food intake declined over the past 3 months due to loss of appetite, digestive problems, chewing or swallowing difficulties?"
+                        color: "black"
+                        size: self.texture_size
+                        text_size: root.width -20, None
+                        bold: True
+                    BoxLayout:
+                        orientation: "horizontal"
+                        Label:
+                            size_hint_x: 0.05
+                        Label:
+                            text: "No decrease in food intake"
+                            color: "black"
+                            font_size: big if root.width> 1500 else small
+                            text_size: root.width/2 -12, None
+                            size_hint_x: 0.7
+                        CheckBox:
+                            group: "intakedecline"
+                            active: True
+                            color:color1
+                            id: ida1
+                            size_hint_x: 0.2
+                        Label:
+                            size_hint_x: 0.05
+                    BoxLayout:
+                        orientation: "horizontal"
+                        Label:
+                            size_hint_x: 0.05
+                        Label:
+                            text: "Moderate decrease in food intake"
+                            color: "black"
+                            text_size: root.width/2 -12, None
+                            font_size: big if root.width> 1500 else small
+                            size_hint_x: 0.7
+                        CheckBox:
+                            group: "intakedecline"
+                            active: False
+                            color:color1
+                            id: ida2
+                            size_hint_x: 0.2
+                        Label:
+                            size_hint_x: 0.05
+
+                    BoxLayout:
+                        orientation: "horizontal"
+                        Label:
+                            size_hint_x: 0.05
+                        Label:
+                            text: "Severe decrease in food intake"
+                            color: "black"
+                            text_size: root.width/2 -12, None
+                            size_hint_x: 0.7
+                            font_size: big if root.width> 1500 else small
+                        CheckBox:
+                            group: "intakedecline"
+                            active: False
+                            color:color1
+                            id: ida3
+                            size_hint_x: 0.2
+                        Label:
+                            size_hint_x: 0.05
+                BoxLayout:
+                    orientation: "vertical"
+                    padding:(10,0,10,0)
+                    size_hint_y: 0.19
+                    BoxLayout:
+                        orientation: "vertical"
+                        RegularLabel:
+                            text: " Weight loss during the last 3 months"
+                            color: "black"
+                            text_size: root.width-20, None
+                            bold: True
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "No weight loss"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "weightdecline"
+                                active: True
+                                color:color1
+                                id: idb1
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Weight loss between 1 and 3 kg (2.2 and 6.6 lbs)"
+                                color: "black"
+                                size: self.texture_size
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                                text_size: root.width/2 -12, None
+                            CheckBox:
+                                group: "weightdecline"
+                                active: False
+                                color:color1
+                                id: idb2
+                                size_hint_x: 0.2
+
+                            Label:
+                                size_hint_x: 0.05
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Does not know"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+
+                            CheckBox:
+                                group: "weightdecline"
+                                active: False
+                                color:color1
+                                id: idb3
+                                size_hint_x: 0.2
+
+                            Label:
+                                size_hint_x: 0.05
+
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Weight loss greater than 3 kg (6.6 lbs)"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+
+                            CheckBox:
+                                group: "weightdecline"
+                                active: False
+                                color:color1
+                                id: idb4
+                                size_hint_x: 0.2
+
+                            Label:
+                                size_hint_x: 0.05
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: 0.17
+                    padding:(10,0,10,0)
+                    background_normal: ''
+                    back_color: color255
+                    border_radius:  25
+                    color: color1
+                    bold: True
+                    canvas.before:
+                        Color:
+                            rgba: color1
+                        Line:
+                            width: 1.8
+                            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+
+                    BoxLayout:
+                        orientation: "vertical"
+                        RegularLabel:
+                            text: " Mobility"
+                            color: "black"
+                            size: self.texture_size
+                            text_size: root.width -20, None
+                            bold: True
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Goes out"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "mobility"
+                                active: True
+                                color:color1
+                                id: idc1
+                                size_hint_x: 0.2
+
+                            Label:
+                                size_hint_x: 0.05
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Able to be mobile but is not"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "mobility"
+                                active: False
+                                color:color1
+                                id: idc2
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Bed/chair bound"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "mobility"
+                                active: False
+                                color:color1
+                                id: idc3
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+                BoxLayout:
+                    orientation: "vertical"
+                    padding:(10,0,10,0)
+                    size_hint_y: 0.16
+                    BoxLayout:
+                        orientation: "vertical"
+                        RegularLabel:
+                            text: " Has suffered psychological stress or acute disease in the past 3 months?"
+                            color: "black"
+                            size: self.texture_size
+                            text_size: root.width -20, None
+                            bold: True
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "No"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "ps"
+                                active: True
+                                color:color1
+                                id: idd1
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Yes"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "ps"
+                                active: False
+                                color:color1
+                                id: idd2
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+                BoxLayout:
+                    orientation: "vertical"
+                    padding:(10,0,10,0)
+                    size_hint_y: 0.17
+                    background_normal: ''
+                    back_color: color255
+                    border_radius:  25
+                    color: color1
+                    bold: True
+                    canvas.before:
+                        Color:
+                            rgba: color1
+                        Line:
+                            width: 1.8
+                            rounded_rectangle: (self.pos[0], self.pos[1], self.size[0], self.size[1], self.border_radius)
+
+                    BoxLayout:
+                        orientation: "vertical"
+                        RegularLabel:
+                            text: " Neuropsychological problems"
+                            color: "black"
+                            size: self.texture_size
+                            text_size: root.width -20, None
+
+                            bold: True
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "No psychological problems"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "pn"
+                                active: True
+                                color:color1
+                                id: ide1
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Mild dementia"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "pn"
+                                active: False
+                                color:color1
+                                id: ide2
+                                size_hint_x: 0.2
+
+                            Label:
+                                size_hint_x: 0.05
+
+                        BoxLayout:
+                            orientation: "horizontal"
+                            Label:
+                                size_hint_x: 0.05
+                            Label:
+                                text: "Severe dementia or depression"
+                                color: "black"
+                                size: self.texture_size
+                                text_size: root.width/2 -12, None
+                                size_hint_x: 0.7
+                                font_size: big if root.width> 1500 else small
+                            CheckBox:
+                                group: "pn"
+                                active: False
+                                color:color1
+                                id: ide3
+                                size_hint_x: 0.2
+                            Label:
+                                size_hint_x: 0.05
+                BoxLayout:
+                    orientation: "vertical"
+                    padding:(10,0,10,0)
+                    size_hint_y: 0.05
+                    BoxLayout:
+                        orientation: "horizontal"
+                        RegularLabel:
+                            text: " BMI"
+                            size_hint_x: 0.7
+                            size: self.texture_size
+                            text_size: root.width *0.7 -20, None
+                        LargeLabel:
+                            text: ''
+                            id: bmi
+                            size_hint_x: 0.3
+                RegularLabel:
+                    id: empty3
+                    size_hint_y: 0.05
+                    text: ""
+                    color: "red"
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: 0.06
+            spacing:8
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:'[b]Previous[/b]'
+                    on_press: root.backp2()
+            AnchorLayout:
+                anchor_x:'center'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:"[b]Recommended[/b]"
+                    on_press: root.saved1()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text:"[b]  NFPE  [/b]"
+                    markup: True
+                    on_press: root.next()
+
+<Patient2>:
+    BoxLayout:
+        orientation: "vertical"
+	    p_temple: p_temple
+	    p_collar_bone: p_collar_bone
+	    p_shoulder: p_shoulder
+	    p_scapula: p_scapula
+        p_hand: p_hand
+        p_thigh: p_thigh
+        BoxLayout:
+            size_hint_y: 0.03
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB[/b] NFPE"
+                        markup:True
+                        color: "white"
+                        with_previous: True
+                        on_press: root.backp2()
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        font_size: big if root.width> 1500 else small
+                        color: "white"
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 0.91
+            GridLayout:
+                size_hint_y: 0.485
+                cols: 1
+                padding: 29
+                spacing: 29
+                size_hint_y: 0.485
+                Label:
+                    size_hint_y: 0.02
+                RegularLabel:
+                    text: "Assessing for Muscle loss"
+                    color: "black"
+                    size_hint_y: 0.022
+                    halign: 'center'
+
+                RegularLabel:
+                    text: "Write 0 if well nourished, 1 if mild - moderate malnutrition, 2 if severe malnutrition."
+                    size_hint_y: 0.022
+                    color: "black"
+                    halign: 'center'
+
+                TextInput:
+                    id: p_temple
+                    hint_text: "Temple. View patient when standing directly in front of them, ask them to turn head side to side. (0): Can see/feel well-defined muscle. (1): Slight depression. (2): Hollowing, scooping, depression"
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_collar_bone
+                    hint_text: "Collar bone region (Pectoralis major, deltoid, and trapezius muscles). Look for prominent bone. Make sure patient is not hunched forward. (0): Visible but not prominent. (1): Visible/some protrusion. (2): Protruding/prominent bone "
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+
+                TextInput:
+                    id: p_shoulder
+                    hint_text: "Shoulder region (acromion bone, deltoid muscle). Patient arms at side and observe shape. (0): Rounded curves at arms, shoulders, neck. (1): Acromion may slightly protrude. (2):Acromion protrusion very prominent"
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_scapula
+                    hint_text: "Scapular bone (deltiod,trapezius, supraspinatus, infraspinatus muscle). Ask patient to extend hands straight out, push against solid object. (0): Bones not prominent, no significant depressions. (1): Mild depression or bone may show slightly. (2): Prominent, visible bones, depressions between ribs/ scapula or shoulder/spine"
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_hand
+                    hint_text: "Hand region (interosseous muscle). Look at thumb side of hand; look at pads of thumb when tip of forefinger touching tip of thumb. (0): Muscle bulges, could be flat in some. (1): Slightly depressed. (2): Depressed area between thumb and forefinger"
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_thigh
+                    write_tab: False
+                    hint_text: "Anterior thigh/ patellar region (quadriceps femoris group). Ask patient to sit, prop up leg on low furniture. Grasp quads to differentiate amount of muscle tissue from fat tissue. (0): Well rounded, well developed. (1): Mild depression on inner thigh and knee cap less prominent. (2): Depression/line on thigh, obviously thin and bones prominent on knee "
+                    multiline:True
+                    on_text_validate: root.next2()
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                RegularLabel:
+                    id: emptyp2
+                    text: ""
+                    size_hint_y: 0.036
+                    color: "red"
+                    halign: 'center'
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: 0.06
+            spacing: 15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text: '[b]Previous[/b]'
+                    on_press: root.backp2()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text: "[b]  Next  [/b]"
+                    on_press: root.next2()
+
+
+<Patient3>:
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: 0.03
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB[/b] NFPE"
+                        markup:True
+                        color: "white"
+                        with_previous: True
+                        on_press: root.backp3()
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        font_size: big if root.width> 1500 else small
+                        ccolor: "white"
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        BoxLayout:
+            size_hint_y: 0.91
+            orientation: "vertical"
+            p_calf: p_calf
+            p_face: p_face
+            p_upper_arm: p_upper_arm
+            p_iliac_crest: p_iliac_crest
+            p_edema: p_edema
+            p_signs: p_signs
+            empty3:empty3
+            GridLayout:
+                size_hint_y: 0.485
+                cols: 1
+                padding: 29
+                spacing: 29
+                Label:
+                    size_hint_y: 0.02
+                TextInput:
+                    id: p_calf
+                    hint_text: "Posterior calf (gastrocnemius and soleus muscles). Grasp the calf muscle to determine amount of tissue. (0): Well developed bulb of muscle. (1): Not well developed. (2): Thin, minimal to no muscle definition"
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                RegularLabel:
+                    text: "Assessing for Fat Loss"
+                    size_hint_y: 0.008
+                    halign: 'center'
+                TextInput:
+                    id: p_face
+                    hint_text: "Face (orbital region). View patient when standing directly in front of them, touch above cheekbone. (0):Slightly bulged fat pads. Careful, fluid retention may mask loss. (1): Slightly dark circles, somewhat hollow look. (2): Hollow look, depressions, dark circles, loose skin  "
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_upper_arm
+                    hint_text: "Arms (triceps, biceps). Arm bent, roll skin between fingers, do not include muscle in pinch. (0): Ample fat tissue obvious between folds of skin. (1): Some depth pinch, but not ample. (2): Very little space between folds, fingers touch"
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_iliac_crest
+                    hint_text: "Thoracic & Lumbar area(ribs, lower back, midaxillary line). Have patient press hands hard against a solid object. (0): Chest full. Slight to no protrusion of iliac crest. Ribs not showing. (2): Ribs showing but depressions between them less pronounced. Iliac crest a little prominent. (2): Depression between ribs very prominent. Iliac crest very prominent. "
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                RegularLabel:
+                    size_hint_y: 0.008
+                    text: "Assessing Fluid Statue"
+                    halign: "center"
+                TextInput:
+                    id: p_edema
+                    hint_text: "Edema (ankles, feet, stomach area, face, scrotum, vulva). Rule out other causes of edema. (0): No sign of fluid accumulation. (1): Mild to moderate pitting, slight swelling of the extremity, 2mm-4mm indentation subsides quickly (0-30 seconds). (2): Deep to 6mm and deeper pitting, depression lasts a to moderate time (31-60 seconds) extremity looks swollen "
+                    multiline:True
+                    write_tab: False
+                    size_hint_y: 0.15
+                    cursor_color: color1
+                TextInput:
+                    id: p_signs
+                    hint_text: "Other relevant vital signs including, water intakeke chake and output, urine concentration, appearance of mucus membrane"
+                    multiline:True
+                    size_hint_y: 0.14
+                    cursor_color: color1
+                RegularLabel:
+                    id: empty3
+                    size_hint_y: 0.014
+                    text: ""
+                    color: "red"
+                    halign:"center"
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: 0.06
+            spacing: 8
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:"[b]Previous[/b]"
+                    on_press: root.backp3()
+            AnchorLayout:
+                anchor_x:'center'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:"[b]Save and Exit[/b]"
+                    on_press: root.saved1()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text:"[b] Micronutrients[/b]"
+                    on_press: root.next()
+
+
+<Nfpe3>:
+    BoxLayout:
+        orientation:"vertical"
+        padding: 0.03*root.width, 0.02*root.height
+        LineBox:
+            orientation:"vertical"
+            LargeLabel:
+                id: date
+                size_hint_y:0.04
+                text: ""
+                halign:'center'
+                bold: True
+            RegularLabel:
+                size_hint_y:0.04
+                text: f" Please note this is only supposed to guide you on your exam.       Page 1/1"
+                halign:'center'
+
+            GridLayout:
+                cols: 2
+                size_hint_y:0.86
+                padding: 0, 40, 0, 0
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Name:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: sna
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Patient Number:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: snu
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Hospital:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: sh
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Ward:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: swa
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Done by:'
+
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: ss
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Gender:'
+
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: sg
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Age:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: sa
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Height:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: she
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Weight:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: sw
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'MUAC:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: smu
+                        text:""
+                        font_name: 'DejaVuSans'
+                        bold: True
+                PlainBox:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        size_hint_x: 0.6
+                        text:'Handgrip:'
+                    RegularLabel:
+                        size_hint_x: 0.4
+                        id: shg
+                        text:""
+                        font_name: 'DejaVuSans'
+                        bold: True
+
+            BoxLayout:
+                size_hint_y:0.1
+                RegularLabel:
+                    id: sfi
+                    text:""
+                    font_name: 'DejaVuSans'
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.06
+                spacing:15
+                AnchorLayout:
+                    anchor_x:'right'
+                    anchor_y:'center'
+                    LineButtonMD:
+                        text: '[b]Edit[/b]'
+                        on_press: root.back()
+                AnchorLayout:
+                    anchor_x:'left'
+                    anchor_y:'center'
+                    FilledButtonMD:
+                        text: '[b]OK![/b] '
+                        on_press: root.ok()
+
+
+<Nfpe>:
+    BoxLayout:
+        orientation:"vertical"
+        padding: 0.02*root.width
+        margin: 0.01*root.width
+
+        LineBox:
+            orientation:"vertical"
+            padding: 0.02*root.width
+            text_size: self.size
+            LargeLabel:
+                id: date
+                size_hint_y:0.04
+                text: ""
+                bold: True
+                halign:'center'
+            RegularLabel:
+                size_hint_y:0.04
+                text: f" Please note this is only supposed to guide you on your exam.       Page 1/1"
+                halign:'center'
+
+            GridLayout:
+                cols: 3
+                size_hint_y:0.23
+                padding: 15
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Name:'
+
+                    RegularLabel:
+                        id: sna
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Patient Number:'
+
+                    RegularLabel:
+                        id: snu
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Hospital:'
+
+                    RegularLabel:
+                        id: sh
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Ward:'
+                    RegularLabel:
+                        id: swa
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Done by:'
+                    RegularLabel:
+                        id: ss
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Gender:'
+                    RegularLabel:
+                        id: sg
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Age:'
+                    RegularLabel:
+                        id: sa
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Height:'
+
+                    RegularLabel:
+                        id: she
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Weight:'
+
+                    RegularLabel:
+                        id: sw
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'MUAC:'
+
+                    RegularLabel:
+                        id: smu
+                        text:""
+                        font_name: 'DejaVuSans'
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Handgrip:'
+                    RegularLabel:
+                        id: shg
+                        text:""
+                        font_name: 'DejaVuSans'
+            BoxLayout:
+                size_hint_y:0.1
+                RegularLabel:
+                    text_size: root.width*0.9 , None
+                    id: sfi
+                    text:""
+                    font_name: 'DejaVuSans'
+
+            GridLayout:
+                cols: 3
+                size_hint_y:0.44
+                padding:(0,10,0, 10)
+                spacing: 5
+                PlainBox:
+                    LargeLabel:
+                        text:'Muscle Assessment'
+
+                PlainBox:
+                    LargeLabel:
+                        text:'Fat Assessment'
+
+                PlainBox:
+                    LargeLabel:
+                        text:'Edema Assessment'
+
+                PlainBox:
+                    orientation: "horizontal"
+
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y: 0.7
+                            size_hint_x: 0.7
+                            RegularLabel:
+                                text:"Temple"
+
+                        RegularLabel:
+                            id: ste
+                            text:""
+                            size_hint_y: 0.7
+                            size_hint_x: 0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y: 0.7
+                            size_hint_x: 0.7
+                            RegularScrollableLabel:
+                                text:"Face"
+                        RegularLabel:
+                            size_hint_y: 0.7
+                            size_hint_x: 0.3
+                            id: sfa
+                            text:""
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x: 0.7
+                            RegularScrollableLabel:
+                                text:"Edema"
+                        RegularLabel:
+                            id: sed
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                PlainBox:
+                    orientation: "horizontal"
+
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Collar bone"
+
+                        RegularLabel:
+                            id: sco
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+                PlainBox:
+                    orientation: "horizontal"
+
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Arms"
+                        RegularLabel:
+                            id: sar
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+
+                                text:"Shoulder"
+                        RegularLabel:
+                            id: ssh
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Thoracic and Lumbar"
+                        RegularLabel:
+                            id: sth
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Scapular"
+                        RegularLabel:
+                            id: ssc
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Hand"
+                        RegularLabel:
+                            id: sha
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Anterior thigh/ patellar"
+                        RegularLabel:
+                            id: sap
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Calf"
+                        RegularLabel:
+                            id: sca
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                BoxLayout:
+                    orientation: "horizontal"
+                    PlainBox:
+                        LargeLabel:
+                            text: "MA Total"
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                        LargeLabel:
+                            id: smt
+                            text:""
+                            text_size:self.size
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        LargeLabel:
+                            text: "FA Total"
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                        LargeLabel:
+                            id: sft
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        LargeLabel:
+                            text: "EA Total"
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                        LargeLabel:
+                            id: set
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+            BoxLayout:
+                size_hint_y:0.1
+                RegularLabel:
+                    id:ssin
+                    text:""
+                    font_name: 'DejaVuSans'
+                    text_size_x: int(root.width*0.9)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.06
+                spacing:15
+                AnchorLayout:
+                    anchor_x:'right'
+                    anchor_y:'center'
+                    LineButtonMD:
+                        text: '[b]Edit[/b]'
+                        on_press: root.back()
+                AnchorLayout:
+                    anchor_x:'left'
+                    anchor_y:'center'
+                    FilledButtonMD:
+                        text: '[b]OK![/b] '
+                        on_press: root.ok()
+
+
+<Micronutrients>:
+    on_leave: root.reset_checkbox()
+    BoxLayout:
+        orientation:"vertical"
+        BoxLayout:
+            size_hint_y: 0.03
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB [/b][color=#FFFFFF]Micronutrient Exam[/color] "
+                        markup:True
+                        color: "white"
+                        with_previous: True
+                        on_press: root.backp4()
+
+                    ActionButton:
+                        text: "[b]Log out[/b]"
+                        markup: True
+                        font_size: big if root.width> 1500 else small
+                        color: "white"
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        GridLayout:
+            cols: 2
+            size_hint_y: 0.91
+            padding:20
+            spacing:5
+            p1:p1
+            p2:p2
+            p3:p3
+            p4:p4
+            p5:p5
+            p6:p6
+            p7:p7
+            p8:p8
+            p9:p9
+            p10:p10
+            p11:p11
+            p12:p12
+            p13:p13
+            p14:p14
+            p15:p15
+            p16:p16
+            p17:p17
+            p18:p18
+            p19:p19
+            p20:p20
+            p21:p21
+            p22:p22
+            p23:p23
+            p24:p24
+            p25:p25
+            p26:p26
+
+            Label:
+            Label:
+            RegularLabel:
+                text: 'Check if symptom is present'
+                bold :True
+                halign:"center"
+            RegularLabel:
+                text: 'If symptom not present leave unchecked'
+                bold :True
+                halign:"center"
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                LargeLabel:
+                    text: 'EYES'
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+
+                LargeLabel:
+                    text: 'FACE'
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Xanthelasma or Circumferential Arcus '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p1
+
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+
+                        text: ' \u2022 Skin color loss, dark cheeks'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p2
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    text: ' \u2022 Angular blepharitis '
+                    size_hint_x: 0.8
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p3
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+                    text: ' \u2022 Pallor'
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p4
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    text: ' \u2022 Pale Conjuctutiva  '
+                    size_hint_x: 0.8
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p5
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Hyperpigmentation(face, eyes, neck, hands) '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p6
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        multiline: True
+                        text: ' \u2022 Night Blindness, dry membranes, dull or soft cornea, infected, ulcerated eye - Keratomalacia '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p7
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Enlarged parotid gland  '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p8
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Angular Palpebritis/ swollen/ sticky eyelids  '
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p9
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'MOUTH'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Ring of fine blood vessels around cornea'
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p10
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+                    text: ' \u2022 Soreness, burning '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p11
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    text: " \u2022 Bitot's spots "
+                    size_hint_x: 0.8
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p12
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Redness, scars, swelling or fissures '
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p13
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    text: ' \u2022 Opthlmoplegia '
+                    size_hint_x: 0.8
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p14
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'LIPS'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'HAIR'
+
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Soreness, burning lips, pale '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p15
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    text: ' \u2022 Alopecia '
+                    size_hint_x: 0.8
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p16
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: "TONGUE"
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Color changes, Depigmentation, Lackluster '
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p17
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Sore, swollen, scarlet, raw-beefy red tongue'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p18
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Easily plucked with no pain; Dull, dry '
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p19
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Soreness, burning tongue, purplish/magenta'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p20
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Corkscrew hair or unemerged curls'
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p21
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Smooth, beefy red tongue'
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p22
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Flag sign (banded colors)'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p23
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Sore, swollen, red, and smooth tongue'
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p24
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Lanugo (very fine, soft hair) '
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p25
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    text: ' \u2022 Pale tongue'
+                    size_hint_x: 0.8
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p26
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint_y:0.06
+            spacing:15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:"[b]Previous[/b]"
+                    on_press: root.backp4()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text:"[b]  Next  [/b]"
+                    on_press: root.next4()
+
+<Micronutrients2>:
+    on_leave: root.reset_checkbox()
+    BoxLayout:
+        orientation:"vertical"
+        BoxLayout:
+            size_hint_y: 0.03
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB[/b][color=#FFFFFF] Micronutrient Exam[/color] "
+                        markup:True
+                        color:"white"
+                        with_previous: True
+                        on_press: root.backp4()
+                    ActionButton:
+                        text: "Log out"
+                        bold: True
+                        color: "white"
+                        font_size: big if root.width> 1500 else small
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        GridLayout:
+            cols: 2
+            size_hint_y: 0.91
+            padding:20
+            spacing:5
+            p27:p27
+            p28:p28
+            p29:p29
+            p30:p30
+            p31:p31
+            p32:p32
+            p33:p33
+            p34:p34
+            p35:p35
+            p36:p36
+            p37:p37
+            p38:p38
+            p39:p39
+            p40:p40
+            p41:p41
+            p42:p42
+            p43:p43
+            p44:p44
+            p45:p45
+            p46:p46
+            p47:p47
+            p48:p48
+            p49:p49
+            p50:p50
+            p51:p51
+            p52:p52
+            p53:p53
+            p54:p54
+            p55:p55
+
+            BoxLayout:
+            BoxLayout:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                LargeLabel:
+                    text: 'GUMS'
+
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'TASTE'
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Gingivitis, swollen, spongy, retracted '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p27
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+                    size_hint_x: 0.8
+                    text_size: self.size
+                    text: ' \u2022 Diminished/altered taste '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p28
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                LargeLabel:
+                    text: 'TEETH'
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: ' NECK'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Gray-brown spots, mottling'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p29
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Thyroid enlargement; Goiter'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p30
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Missing or erupting abnormally '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p31
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'NAILS'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Dental caries '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p32
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Horizontal grooves on the nail '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p33
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'GASTROINTESTINAL'
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Transverse white lines'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p34
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Anorexia, flatulence, diarrhea '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p35
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Spoon-shaped, concave '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p36
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'SKELETAL SYSTEM'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Splinter Hemorrhage'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p37
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Demineralization of bone '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p38
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+
+                    RegularScrollableLabel:
+                        text: ' \u2022 Brittle, soft, dry; split easily'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p39
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+                    size_hint_x: 0.8
+                    text_size: self.size
+
+                    text: ' \u2022 Rickets'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p40
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Central ridges'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p41
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Bone tenderness/pain'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p42
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'MUSCULAR SYSTEM'
+
+                Label:
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'NERVOUS SYSTEM'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Weakness '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p43
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Listlessness '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p44
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Wasted appearance '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p45
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Inability to concentrate, bad memory '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p46
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Calf tenderness, foot/wrist drop, absent reflexes '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p47
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Seizures, memory impairment, and behavioral disturbances '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p48
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Peripheral neuropathy, tingling, pins and needles '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p49
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Peripheral neuropathy with weakness and paraesthesias; Ataxia'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p50
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Muscle twitching, convulsions, tetany '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p51
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Irritability, weakness, impaired cognitive function, anorexia '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p52
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+                    text: ' \u2022 Muscle cramps '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p53
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Dementia '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p54
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Muscle pain '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p55
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint_y: 0.06
+            spacing:15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text:"[b]Previous[/b]"
+                    on_press: root.backp4()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text:"[b]  Next  [/b]"
+                    on_press: root.next4()
+
+
+<Micronutrients3>:
+    on_leave: root.reset_checkbox()
+    BoxLayout:
+        orientation:"vertical"
+        BoxLayout:
+            size_hint_y: 0.03
+            ActionBar:
+                pos_hint: {'top':1}
+                background_color: color1ForTop
+                ActionView:
+                    ActionPrevious:
+                        previous_image: "images/chevron-left.png"
+                        title: "[b]NB[/b] [color=#FFFFFF] Micronutrient Exam[/color] "
+                        markup:True
+                        color:"white"
+                        with_previous: True
+                        on_press: root.backp4()
+                    ActionButton:
+                        text: "Log out"
+                        color: "white"
+                        bold:True
+                        font_size: big if root.width> 1500 else small
+                        on_press: root.disconnect()
+                    ActionOverflow:
+                        overflow_image: "images/dots-vertical.png"
+                        ActionButton:
+                            text: "[b]Profile[/b]"
+                            markup: True
+                            color: 'white'
+                            font_size: big if root.width> 1500 else small
+                            background_color: color1
+                            on_press: root.profile()
+        GridLayout:
+            cols: 2
+            size_hint_y: 0.91
+            padding:20
+            spacing:5
+            p56:p56
+            p57:p57
+            p58:p58
+            p59:p59
+            p60:p60
+            p61:p61
+            p62:p62
+            p63:p63
+            p64:p64
+            p65:p65
+            p66:p66
+            p67:p67
+            p68:p68
+            p69:p69
+            p70:p70
+            p71:p71
+            p72:p72
+            p73:p73
+            p74:p74
+            p75:p75
+
+            BoxLayout:
+            BoxLayout:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'SKIN'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: (0,0,1, 0.1)
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                LargeLabel:
+                    text: 'SKIN (continued)'
+
+                Label:
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+
+                        text: ' \u2022 Slow wound healing, decubitus ulcers '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p56
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Velvety hyperpigmentation in body fold '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p57
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+                    text: ' \u2022 Psoriasis '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p58
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Eczema'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p59
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Goose flesh '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p60
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Seborrheic dermatitis '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p61
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Petechiae '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p62
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Purpura '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p63
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Abnormal dryness '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p64
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Perifollicular Hemorrhage '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p65
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text:  ' \u2022 Dryness, sandpaper feel, flakiness'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p66
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text:  ' \u2022 Thick, dry, scaly pigmented skin on sun-exposed areas '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p67
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text:  ' \u2022 Lack of fat under skin, cellophane appearance '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p68
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text:  ' \u2022 Bilateral edema'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p69
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+                    text:  ' \u2022 Yellow Pigmentation '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p70
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+
+                        text:  ' \u2022 Yellow to Orange Pigmentation'
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p71
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text:  ' \u2022 Increased redness, desquamation '
+
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p72
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text:  ' \u2022 Body edema, round swollen face'
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p73
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                ScrollView:
+                    size_hint_x: 0.8
+                    RegularScrollableLabel:
+                        text: ' \u2022 Pallor, fatigue, depression '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p74
+
+            BoxLayout:
+                orientation: "horizontal"
+                canvas.before:
+                    Color:
+                        rgba: color1light
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                RegularScrollableLabel:
+
+                    size_hint_x: 0.8
+
+                    text: ' \u2022 Poor skin turgor '
+                CheckBox:
+                    active: False
+                    color:color1
+                    size_hint_x: 0.2
+                    id: p75
+
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint_y: 0.06
+            spacing:15
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text: "[b]Previous[/b]"
+                    on_press: root.backp4()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text: "Save"
+                    on_press: root.next4()
+
+
+<SelectableLabel2>:
+    text_size: self.size
+    id_label1: ''
+    id_label2: ''
+    id_label3: ''
+    PlainBox:
+        orientation: "horizontal"
+        padding: 0, 0, 0, 0
+        PlainBox:
+            size_hint_x: 0.33
+            padding: 3, 6, 3, 6
+            RegularLabel:
+                id: id_label1
+                text: root.id_label1
+                halign: 'center'
+                font_size: big if root.width> 1500 else vsmall
+        PlainBox:
+            size_hint_x: 0.34
+            padding: 3, 6, 3, 6
+            RegularLabel:
+                id: id_label2
+                text: root.id_label2
+                halign: 'center'
+                font_size: big if root.width> 1500 else vsmall
+        PlainBox:
+            size_hint_x: 0.33
+            padding: 3, 6, 3, 6
+            RegularLabel:
+                id: id_label3
+                text: root.id_label3
+                halign: 'center'
+                font_size: big if root.width> 1500 else vsmall
+<RV2>:
+    viewclass: 'SelectableLabel2'
+    SelectableRecycleBoxLayout2:
+        default_size: None, root.height*0.12
+        default_size_hint:1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        multiselect: False
+        touch_multiselect: False
+        padding:(50,3,50,3)
+        spacing: 0
+
+<Nfpe2>:
+    BoxLayout:
+        orientation:"vertical"
+        padding: 0.02*root.width
+        margin: 0.01*root.width
+        LineBox:
+            orientation:"vertical"
+            padding: 0.02*root.width
+            text_size: self.size
+            LargeLabel:
+                id: date
+                size_hint_y:0.04
+                text: ""
+                bold: True
+                halign:'center'
+            RegularLabel:
+                size_hint_y:0.05
+                text: f" Please note this is only supposed to guide you on your exam.     Page 1/2"
+                halign:'center'
+            GridLayout:
+                cols: 3
+                size_hint_y:0.23
+                padding: 15
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Name:'
+                    RegularLabel:
+                        id: sna
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Patient Number:'
+                    RegularLabel:
+                        id: snu
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Hospital:'
+                    RegularLabel:
+                        id: sh
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Ward:'
+                    RegularLabel:
+                        id: swa
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Done by:'
+
+                    RegularLabel:
+                        id: ss
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Gender:'
+
+                    RegularLabel:
+                        id: sg
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Age:'
+                    RegularLabel:
+                        id: sa
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Height:'
+
+                    RegularLabel:
+                        id: she
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Weight:'
+
+                    RegularLabel:
+                        id: sw
+                        text:""
+                        font_name: 'DejaVuSans'
+                        italic: True
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'MUAC:'
+                    RegularLabel:
+                        id: smu
+                        text:""
+                        font_name: 'DejaVuSans'
+
+                BoxLayout:
+                    orientation:"horizontal"
+                    RegularLabel:
+                        text:'Handgrip:'
+
+                    RegularLabel:
+                        id: shg
+                        text:""
+                        font_name: 'DejaVuSans'
+
+            BoxLayout:
+                size_hint_y:0.05
+                RegularLabel:
+                    text_size: root.width *0.9 , None
+                    id: sfi
+                    text:""
+                    font_name: 'DejaVuSans'
+
+            GridLayout:
+                cols: 3
+                size_hint_y:0.44
+                padding:(0,10,0, 10)
+                spacing: 5
+                PlainBox:
+                    LargeLabel:
+                        text:'Muscle Assessment'
+                PlainBox:
+                    LargeLabel:
+                        text:'Fat Assessment'
+                PlainBox:
+                    LargeLabel:
+                        text:'Edema Assessment'
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y: 0.7
+                            size_hint_x: 0.7
+                            RegularScrollableLabel:
+                                text:"Temple"
+                        RegularLabel:
+                            id: ste
+                            text:""
+                            size_hint_y: 0.7
+                            size_hint_x: 0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y: 0.7
+                            size_hint_x: 0.7
+                            RegularScrollableLabel:
+                                text:"Face"
+                        RegularLabel:
+                            size_hint_y: 0.7
+                            size_hint_x: 0.3
+                            id: sfa
+                            text:""
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x: 0.7
+                            RegularScrollableLabel:
+                                text:"Edema"
+                        RegularLabel:
+                            id: sed
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Collar bone"
+                        RegularLabel:
+                            id: sco
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Arms"
+                        RegularLabel:
+                            id: sar
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Shoulder"
+                        RegularLabel:
+                            id: ssh
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Thoracic and Lumbar"
+                        RegularLabel:
+                            id: sth
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Scapular"
+                        RegularLabel:
+                            id: ssc
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Hand"
+                        RegularLabel:
+                            id: sha
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Anterior thigh/ patellar"
+                        RegularLabel:
+                            id: sap
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                BoxLayout:
+                BoxLayout:
+                PlainBox:
+                    orientation: "horizontal"
+
+                    BoxLayout:
+                        ScrollView:
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                            RegularScrollableLabel:
+                                text:"Calf"
+                        RegularLabel:
+                            id: sca
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+                BoxLayout:
+
+                BoxLayout:
+
+                BoxLayout:
+                    orientation: "horizontal"
+                    PlainBox:
+                        LargeLabel:
+                            text: "MA Total"
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                        LargeLabel:
+                            id: smt
+                            text:""
+                            text_size:self.size
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        LargeLabel:
+                            text: "FA Total"
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                        LargeLabel:
+                            id: sft
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+                PlainBox:
+                    orientation: "horizontal"
+                    BoxLayout:
+                        LargeLabel:
+                            text: "EA Total"
+                            size_hint_y:0.7
+                            size_hint_x:0.7
+                        LargeLabel:
+                            id: set
+                            text:""
+                            size_hint_y:0.7
+                            size_hint_x:0.3
+
+            BoxLayout:
+                size_hint_y:0.05
+                RegularLabel:
+                    id:ssin
+                    text:""
+                    font_name: 'DejaVuSans'
+                    text_size_x: int(root.width*0.9)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 0.06
+                spacing:15
+                AnchorLayout:
+                    anchor_x:'right'
+                    anchor_y:'center'
+                    LineButtonMD:
+                        text: '[b]Edit[/b]'
+                        on_press: root.back()
+                AnchorLayout:
+                    anchor_x:'left'
+                    anchor_y:'center'
+                    FilledButtonMD:
+                        text: '[b]Next[/b]'
+                        on_press: root.ok()
+
+
+<Micronutrientsfinal>:
+    BoxLayout:
+        orientation:"vertical"
+        Label:
+            id: end
+            size_hint_y:0.04
+            text: "[b]Micronutrient summary [/b]    Page 2/2 "
+            markup: True
+            color:"black"
+        BoxLayout:
+            size_hint_y: 0.936
+            RV2:
+                id: patientlist2
+                markup: True
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint_y: 0.06
+            spacing:8
+            AnchorLayout:
+                anchor_x:'right'
+                anchor_y:'center'
+                LineButtonMD:
+                    text: '[b]Previous[/b]'
+                    on_press: root.backp4()
+            AnchorLayout:
+                anchor_x:'center'
+                anchor_y:'center'
+                LineButtonMD:
+                    text: ' [b]Edit[/b] '
+                    on_press: root.edit()
+            AnchorLayout:
+                anchor_x:'left'
+                anchor_y:'center'
+                FilledButtonMD:
+                    text:'  [b]OK![/b]  '
+                    on_press: root.ok()
+
