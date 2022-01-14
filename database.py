@@ -1,7 +1,7 @@
 import mysql.connector
 
 try:
-    db = mysql.connector.connect(host="sql3.freesqldatabase.com", user="sql3440599", passwd="cU1kAzDUbq", database="sql3440599",
+    db = mysql.connector.connect(host=HOST, user=USER, passwd=PASSWORD, database=DATABASE,
                                  auth_plugin='mysql_native_password')
     mycursor = db.cursor()
 
