@@ -543,7 +543,6 @@ class Updateprofile(Screen):
                         self.ids.change.text = f"Current password is wrong"
                         allok = False
                 except Exception as e:
-
                     self.ids.change.text = "Check internet connection"
         if allok:
             self.ids.change.text = f"The following have been changed successfully: {updates}"
